@@ -146,44 +146,65 @@
         </header>
 
         <div class="grid">
-            <!-- Pannello Controlli e Prestazioni -->
+            <!-- Riga 1, Colonna 1: Comandi e Prestazioni -->
             <div class="card">
                 <h2>Comandi e Prestazioni</h2>
                 <div class="control-group" style="margin-top: 15px;">
-                    <label for="sDir">Superficie Diruttori (S): <span id="sDirVal" class="value-display">0.40</span> m²</label>
+                    <label for="sDir">Superficie Diruttori (S<sub>dir</sub>): <span id="sDirVal" class="value-display">0.40</span> m²</label>
                     <input type="range" id="sDir" min="0.00" max="1.50" step="0.05" value="0.40">
                 </div>
                 <div class="control-group">
-                    <label>Incremento Resistenza Calcolato (Delta CD0): <span id="deltaCdVal" class="value-display">-</span></label>
+                    <label>Incremento Resistenza Calcolato (&Delta;C<sub>D0</sub>): <span id="deltaCdVal" class="value-display">-</span></label>
                 </div>
 
                 <div class="results-box">
-                    <p><strong>Efficienza Massima (Emax):</strong> <span id="eMaxVal" class="value-display">-</span></p>
-                    <p><strong>Angolo di Rampa Minimo (gamma_min):</strong> <span id="gammaVal" class="value-display">-</span></p>
-                    <p><strong>Velocità Limite in Candela (Vlim):</strong> <span id="vLimVal" class="value-display">-</span></p>
-                    <p><strong>Coefficiente Ottimale (C*'L):</strong> <span id="clOptVal" class="value-display">-</span></p>
+                    <p><strong>Efficienza Massima (E<sub>max</sub>):</strong> <span id="eMaxVal" class="value-display">-</span></p>
+                    <p><strong>Angolo di Rampa Minimo (&gamma;<sub>min</sub>):</strong> <span id="gammaVal" class="value-display">-</span></p>
+                    <p><strong>Velocità Limite in Candela (V<sub>lim</sub> rel.):</strong> <span id="vLimVal" class="value-display">-</span></p>
+                    <p><strong>Coefficiente Ottimale (C*<sub>L</sub>):</strong> <span id="clOptVal" class="value-display">-</span></p>
                 </div>
                 <div id="stallWarning" class="warning" style="display:none;">
-                    ⚠️ Attenzione: C*'L supera CLmax (Stallo strutturale/aerodinamico dell'ottimo)!
+                    ⚠️ Attenzione: C*<sub>L</sub> supera C<sub>L,max</sub> (Stallo strutturale/aerodinamico dell'ottimo)!
                 </div>
                 <p style="font-size: 0.8rem; margin-top: 15px; color: var(--text-muted);">
-                    <em>Parametri base:</em> S ala = 20 m^2, CD0 = 0.020, K = 0.045, CD = 1.5, CLmax = 1.40.
+                    <em>Parametri base:</em> S<sub>wing</sub> = 20 m², C<sub>D0</sub> = 0.020, K = 0.045, C<sub>D,piastra</sub> = 1.5, C<sub>L,max</sub> = 1.40.
                 </p>
             </div>
 
-            <!-- Grafico 1: Polare Invertita -->
+            <!-- Riga 1, Colonna 2: Grafico Polare Invertita -->
             <div class="card">
-                <h2>Polare Invertita (C_L vs C_D)</h2>
+                <h2>Polare Invertita (C<sub>L</sub> vs C<sub>D</sub>)</h2>
                 <div class="canvas-container">
                     <canvas id="polarChart"></canvas>
                 </div>
             </div>
 
-            <!-- Grafico 2: Efficienza Aerodinamica -->
+            <!-- Riga 2, Colonna 1: Grafico Efficienza Aerodinamica -->
             <div class="card">
-                <h2>Efficienza Aerodinamica (E vs C_L)</h2>
+                <h2>Efficienza Aerodinamica (E vs C<sub>L</sub>)</h2>
                 <div class="canvas-container">
                     <canvas id="efficiencyChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Riga 2, Colonna 2: Formule Aerodinamiche (Sotto il grafico della polare) -->
+            <div class="card">
+                <h2>Formule Aerodinamiche</h2>
+                <p style="font-size: 0.85rem; margin-bottom: 10px; color: var(--text-muted);">Relazioni analitiche implementate nel modello:</p>
+                <div class="results-box" style="font-size: 0.8rem; line-height: 1.4; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 0;">
+                    <div>
+                        <p><strong>1. Polare (C<sub>D</sub> vs C<sub>L</sub>):</strong><br>
+                        C'<sub>D</sub> = C'<sub>D0</sub> + K · C<sub>L</sub><sup>2</sup><br>
+                        <span style="color: var(--text-muted);">K = 1/(e · pi · C<sub>L</sub>)
+                        <p style="margin-top: 8px;"><strong>2. Efficienza Max:</strong><br>
+                        E'<sub>max</sub> = 1 / (2 · √(K · C'<sub>D0</sub>))</p>
+                    </div>
+                    <div>
+                        <p><strong>3. Angolo Rampa:</strong><br>
+                        sin(&gamma;'<sub>min</sub>) = 1 / E'<sub>max</sub></p>
+                        <p style="margin-top: 8px;"><strong>4. Velocità Candela:</strong><br>
+                        V<sub>lim</sub> = √(2W / (ρ · S · C'<sub>D0</sub>))</p>
+                    </div>
                 </div>
             </div>
         </div>
