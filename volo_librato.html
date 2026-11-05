@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infografica: Volo Planato, Vento e Confronto Alianti</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #f59e0b;
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.5;
+        }
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        header h1 {
+            color: #38bdf8;
+            margin-bottom: 5px;
+        }
+        header p {
+            color: var(--text-muted);
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        @media (max-width: 768px) {
+            .grid { grid-template-columns: 1fr; }
+        }
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+        .card h2 {
+            margin-top: 0;
+            color: #38bdf8;
+            font-size: 1.05rem;
+            border-bottom: 2px solid #334155;
+            padding-bottom: 8px;
+        }
+        .control-group {
+            margin-bottom: 10px;
+        }
+        label {
+            display: block;
+            margin-bottom: 3px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--primary);
+        }
+        .value-display {
+            font-weight: bold;
+            color: #38bdf8;
+        }
+        .results-box {
+            background-color: #0f172a;
+            border-left: 4px solid var(--primary);
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.85rem;
+        }
+        .canvas-container {
+            position: relative;
+            height: 250px;
+            width: 100%;
+        }
+        .nav-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+            gap: 20px;
+        }
+        .nav-box {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 14px 22px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            text-decoration: none;
+            color: var(--text);
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border: 1px solid #334155;
+            transition: all 0.2s ease;
+        }
+        .nav-box:hover {
+            border-color: #38bdf8;
+            background-color: #1e293b;
+            transform: translateY(-2px);
+        }
+        .nav-box span {
+            color: #38bdf8;
+            font-weight: bold;
+        }
+        @media (max-width: 600px) {
+            .nav-footer {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Simulazione Volo Planato: Pesi, Vento e Dinamica</h1>
+            <p>Analisi separata di traiettoria, velocità, discesa nel tempo ed effetto del vento orizzontale.</p>
+        </header>
+
+        <div class="grid">
+            <!-- Pannello Controlli -->
+            <div class="card">
+                <h2>Parametri di Simulazione</h2>
+                <div class="control-group">
+                    <label>Peso Aliante 1 (W_1): <span id="w1-val" class="value-display">200</span> kg</label>
+                    <input type="range" id="w1" min="100" max="500" value="200" step="10">
+                </div>
+                <div class="control-group">
+                    <label>Peso Aliante 2 (W_2): <span id="w2-val" class="value-display">450</span> kg</label>
+                    <input type="range" id="w2" min="500" max="800" value="450" step="10">
+                </div>
+                <div class="control-group">
+                    <label>Quota Iniziale (h): <span id="h-val" class="value-display">1000</span> m</label>
+                    <input type="range" id="h" min="500" max="2500" value="1000" step="100">
+                </div>
+                <div class="control-group">
+                    <label>Efficienza Aerodinamica (L/D): <span id="ld-val" class="value-display">20</span></label>
+                    <input type="range" id="ld" min="10" max="35" value="20" step="1">
+                </div>
+                <div class="control-group">
+                    <label>Vento Orizzontale (u): <span id="wind-val" class="value-display">0</span> m/s <small style="color:var(--text-muted)">(< 0: contrario, > 0: in coda)</small></label>
+                    <input type="range" id="wind" min="-15" max="15" value="0" step="1">
+                </div>
+                
+                <div class="results-box" id="results"></div>
+            </div>
+
+            <!-- 1. Grafico Traiettoria Spaziale -->
+            <div class="card">
+                <h2>1. Traiettoria Spaziale (Quota vs Distanza Aria)</h2>
+                <div class="canvas-container">
+                    <canvas id="trajectoryChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid">
+            <!-- 2. Grafico Quota vs Tempo con Vento -->
+            <div class="card">
+                <h2>2. Discesa nel Tempo (Quota vs Tempo)</h2>
+                <div class="canvas-container">
+                    <canvas id="timeChart"></canvas>
+                </div>
+            </div>
+
+            <!-- 3. Grafico Velocità Separate -->
+            <div class="card">
+                <h2>3. Confronto Velocità (Aria e Verticale)</h2>
+                <div class="canvas-container">
+                    <canvas id="velocityChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid">
+            <!-- 4. Distanza al Suolo con Vento -->
+            <div class="card" style="grid-column: 1 / -1;">
+                <h2>4. Distanza Percorsa al Suolo (In presenza di vento orizzontale)</h2>
+                <div class="canvas-container" style="height: 200px;">
+                    <canvas id="groundDistanceChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const w1Slider = document.getElementById('w1');
+        const w2Slider = document.getElementById('w2');
+        const hSlider = document.getElementById('h');
+        const ldSlider = document.getElementById('ld');
+        const windSlider = document.getElementById('wind');
+
+        let trajectoryChart, timeChart, velocityChart, groundDistanceChart;
+
+        function initCharts() {
+            // 1. Traiettoria
+            trajectoryChart = new Chart(document.getElementById('trajectoryChart').getContext('2d'), {
+                type: 'line',
+                data: { labels: [], datasets: [{ label: 'Entrambi gli alianti (stessa geometria)', data: [], borderColor: '#38bdf8', borderWidth: 3, pointRadius: 0, fill: false }] },
+                options: {
+                    responsive: true, maintainAspectRatio: false, animation: false,
+                    scales: {
+                        x: { title: { display: true, text: 'Distanza Aria (m)', color: '#94a3b8' }, ticks: { color: '#94a3b8' }, grid: { color: '#334155' } },
+                        y: { title: { display: true, text: 'Quota (m)', color: '#94a3b8' }, ticks: { color: '#94a3b8' }, grid: { color: '#334155' } }
+                    },
+                    plugins: { legend: { labels: { color: '#f8fafc' } } }
+                }
+            });
+
+            // 2. Quota vs Tempo
+            timeChart = new Chart(document.getElementById('timeChart').getContext('2d'), {
+                type: 'line',
+                data: { labels: [], datasets: [
+                    { label: 'Aliante 1 (Leggero)', data: [], borderColor: '#38bdf8', borderWidth: 2.5, pointRadius: 0, fill: false },
+                    { label: 'Aliante 2 (Pesante)', data: [], borderColor: '#f59e0b', borderWidth: 2.5, pointRadius: 0, fill: false }
+                ]},
+                options: {
+                    responsive: true, maintainAspectRatio: false, animation: false,
+                    scales: {
+                        x: { title: { display: true, text: 'Tempo (s)', color: '#94a3b8' }, ticks: { color: '#94a3b8' }, grid: { color: '#334155' } },
+                        y: { title: { display: true, text: 'Quota (m)', color: '#94a3b8' }, ticks: { color: '#94a3b8' }, grid: { color: '#334155' } }
+                    },
+                    plugins: { legend: { labels: { color: '#f8fafc' } } }
+                }
+            });
+
+            // 3. Velocità Separate
+            velocityChart = new Chart(document.getElementById('velocityChart').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: ['Velocità Totale (V)', 'Velocità Scesa (Vy)'],
+                    datasets: [
+                        { label: 'Aliante 1', data: [0, 0], backgroundColor: '#38bdf8' },
+                        { label: 'Aliante 2', data: [0, 0], backgroundColor: '#f59e0b' }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false, animation: false,
+                    scales: {
+                        x: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } },
+                        y: { title: { display: true, text: 'm/s', color: '#94a3b8' }, ticks: { color: '#94a3b8' }, grid: { color: '#334155' } }
+                    },
+                    plugins: { legend: { labels: { color: '#f8fafc' } } }
+                }
+            });
+
+            // 4. Distanza al Suolo
+            groundDistanceChart = new Chart(document.getElementById('groundDistanceChart').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: ['Distanza al Suolo'],
+                    datasets: [
+                        { label: 'Aliante 1', data: [0], backgroundColor: '#38bdf8' },
+                        { label: 'Aliante 2', data: [0], backgroundColor: '#f59e0b' }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false, animation: false,
+                    indexAxis: 'y',
+                    scales: {
+                        x: { title: { display: true, text: 'Distanza al Suolo (m)', color: '#94a3b8' }, ticks: { color: '#94a3b8' }, grid: { color: '#334155' } },
+                        y: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } }
+                    },
+                    plugins: { legend: { labels: { color: '#f8fafc' } } }
+                }
+            });
+        }
+
+        function updateSimulation() {
+            const W1 = parseFloat(w1Slider.value);
+            const W2 = parseFloat(w2Slider.value);
+            const h = parseFloat(hSlider.value);
+            const LD = parseFloat(ldSlider.value);
+            const wind = parseFloat(windSlider.value);
+
+            document.getElementById('w1-val').innerText = W1;
+            document.getElementById('w2-val').innerText = W2;
+            document.getElementById('h-val').innerText = h;
+            document.getElementById('ld-val').innerText = LD;
+            document.getElementById('wind-val').innerText = wind;
+
+            // Fisica di base
+            const tanGamma = 1 / LD;
+            const gamma = Math.atan(tanGamma);
+            const distAriaMax = h * LD;
+
+            const k = 1.76; 
+            const V1 = k * Math.sqrt(W1);
+            const V2 = k * Math.sqrt(W2);
+
+            const Vx1 = V1 * Math.cos(gamma);
+            const Vy1 = V1 * Math.sin(gamma);
+            const Vx2 = V2 * Math.cos(gamma);
+            const Vy2 = V2 * Math.sin(gamma);
+
+            const t1 = h / Vy1;
+            const t2 = h / Vy2;
+
+            // Effetto vento sulla distanza al suolo
+            const groundDist1 = distAriaMax + wind * t1;
+            const groundDist2 = distAriaMax + wind * t2;
+
+            const showground1 = groundDist1 /1000
+            const showground2 = groundDist2 /1000
+
+            const ratioT = (t2 / t1).toFixed(3);
+            const ratioW = Math.sqrt(W1 / W2).toFixed(3);
+
+            let windEffectText = wind === 0 ? "Aria calma (nessun effetto vento)" : (wind > 0 ? "Vento in coda (favorevole al più lento)" : "Vento contrario (penalizza di più il più leggero)");
+
+            document.getElementById('results').innerHTML = `
+                <b>Tempo Aliante 1:</b> ${t1.toFixed(1)} s | <b>Aliante 2:</b> ${t2.toFixed(1)} s<br>
+                <b>Distanza al suolo (A1):</b> ${showground1.toFixed(1)} km<br>
+                <b>Distanza al suolo (A2):</b> ${showground2.toFixed(1)} km<br>
+                <small style="color:#38bdf8">${windEffectText}</small>
+            `;
+
+            // 1. Traiettoria Spaziale
+            const steps = 15;
+            const xLabels = [], ySpatial = [];
+            for (let i = 0; i <= steps; i++) {
+                let x = (distAriaMax / steps) * i;
+                xLabels.push(x.toFixed(0));
+                ySpatial.push((h - x * tanGamma).toFixed(0));
+            }
+            trajectoryChart.data.labels = xLabels;
+            trajectoryChart.data.datasets[0].data = ySpatial;
+            trajectoryChart.update('none');
+
+            // 2. Quota vs Tempo (con effetto vento visibile se alterasse la quota, ma la quota scende in base a Vy; l'effetto vento si riflette sul tempo e sulla deriva orizzontale)
+            const timeSteps = 15;
+            const timeLabelsUnified = [], y1Unified = [], y2Unified = [];
+            const maxT = Math.max(t1, t2);
+            for (let i = 0; i <= timeSteps; i++) {
+                let currentT = (maxT / timeSteps) * i;
+                timeLabelsUnified.push(currentT.toFixed(1));
+                
+                let curH1 = Math.max(0, h - Vy1 * currentT);
+                let curH2 = Math.max(0, h - Vy2 * currentT);
+                y1Unified.push(curH1.toFixed(0));
+                y2Unified.push(curH2.toFixed(0));
+            }
+            timeChart.data.labels = timeLabelsUnified;
+            timeChart.data.datasets[0].data = y1Unified;
+            timeChart.data.datasets[1].data = y2Unified;
+            timeChart.update('none');
+
+            // 3. Velocità Separate
+            velocityChart.data.datasets[0].data = [V1.toFixed(1), Vy1.toFixed(1)];
+            velocityChart.data.datasets[1].data = [V2.toFixed(1), Vy2.toFixed(1)];
+            velocityChart.update('none');
+
+            // 4. Distanza al Suolo
+            groundDistanceChart.data.datasets[0].data = [groundDist1.toFixed(1)];
+            groundDistanceChart.data.datasets[1].data = [groundDist2.toFixed(1)];
+            groundDistanceChart.update('none');
+        }
+
+        initCharts();
+        updateSimulation();
+
+        w1Slider.addEventListener('input', updateSimulation);
+        w2Slider.addEventListener('input', updateSimulation);
+        hSlider.addEventListener('input', updateSimulation);
+        ldSlider.addEventListener('input', updateSimulation);
+        windSlider.addEventListener('input', updateSimulation);
+    </script>
+    <div class="nav-footer">
+            <a href="index.html" class="nav-box">
+                <span>&larr; Home</span>
+            </a>
+            <a href="diruttori.html" class="nav-box" style="justify-content: flex-end;">
+                <span>Diruttori Aerodinamici &rarr;</span>
+            </a>
+    </div>
+</body>
+</html>

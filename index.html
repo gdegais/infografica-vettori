@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Aerodinamica: Volo Librato e Diruttori</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #f59e0b;
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px 0;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        header h1 {
+            color: #38bdf8;
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        @media (max-width: 768px) {
+            .grid { grid-template-columns: 1fr; }
+        }
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            border: 1px solid #334155;
+        }
+        .card h2 {
+            margin-top: 0;
+            color: #38bdf8;
+            font-size: 1.3rem;
+            border-bottom: 2px solid #334155;
+            padding-bottom: 10px;
+        }
+        .card p {
+            color: var(--text);
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+        }
+        .card ul {
+            color: var(--text-muted);
+            padding-left: 20px;
+            font-size: 0.9rem;
+        }
+        .card li {
+            margin-bottom: 8px;
+        }
+        /* Stili per la navigazione in basso */
+        .nav-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 40px;
+            gap: 20px;
+        }
+        .nav-box {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 16px 24px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            text-decoration: none;
+            color: var(--text);
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border: 1px solid #334155;
+            transition: all 0.2s ease;
+        }
+        .nav-box:hover {
+            border-color: #38bdf8;
+            background-color: #1e293b;
+            transform: translateY(-2px);
+        }
+        .nav-box span {
+            color: #38bdf8;
+            font-weight: bold;
+        }
+        @media (max-width: 600px) {
+            .nav-footer {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Principi di Aerodinamica del Velivolo</h1>
+            <p>Panoramica teorica sui fondamenti del volo librato e sul controllo della resistenza tramite i diruttori</p>
+        </header>
+
+        <div class="grid">
+            <!-- Concept 1: Volo Librato -->
+            <div class="card">
+                <h2>1. Il Volo Librato</h2>
+                <p>
+                    Il volo librato descrive il moto di un velivolo in discesa privo di spinta motrice attiva. In questa condizione di equilibrio dinamico, la forza peso viene bilanciata dalla combinazione di portanza e resistenza aerodinamica.
+                </p>
+                <ul>
+                    <li><strong>L'equilibrio delle forze e l'angolo di rampa:</strong> il velivolo mantiene una velocità costante scendendo lungo una traiettoria inclinata (rampa di discesa). </li>
+                    <li><strong>Efficienza Aerodinamica (L/D):</strong> Rapporto chiave che determina la pendenza della traiettoria di planata (\gamma).</li>
+                    <li><strong>Velocità di discesa minima e di massima efficienza:</strong> Condizioni operative fondamentali per massimizzare l'autonomia o la quota di volo.</li>
+                </ul>
+            </div>
+
+            <!-- Concept 2: Diruttori Aerodinamici -->
+            <div class="card">
+                <h2>2. I Diruttori (Freni Aerodinamici)</h2>
+                <p>
+                    I diruttori (*airbrakes* o *spoilers*) sono superfici mobili azionate per incrementare deliberatamente la resistenza aerodinamica del velivolo senza alterare in modo critico la portanza complessiva.
+                </p>
+                <ul>
+                    <li><strong>Incremento della resistenza parassita (CD0):</strong> Spostano la polare verso destra, aumentando la resistenza a portanza nulla.</li>
+                    <li><strong>Controllo della discesa:</strong> Permettono di accentuare l'angolo di rampa in atterraggio senza accelerare.</li>
+                    <li><strong>Limitazione di velocità:</strong> Impediscono il fuorigiri o il superamento dei limiti strutturali in picchiata verticale (*candela*).</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Box di Navigazione inferiore -->
+        <div class="nav-footer">
+            <a href="volo_librato.html" class="nav-box" style="margin-left: auto;">
+                <span>Prosegui con l'infografica interattiva &rarr;</span>
+            </a>
+        </div>
+    </div>
+
+</body>
+</html>
